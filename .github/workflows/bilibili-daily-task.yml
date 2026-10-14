@@ -1,0 +1,34 @@
+# BiliBiliToolPro 每日任务（GitHub Actions 版）
+# 用法：把本文件放到你 fork 后的仓库 .github/workflows/bilibili-daily-task.yml
+#       并在 Settings -> Secrets and variables -> Actions 里新增一个 secret：
+#         COOKIESTR  = 你的 B 站 Cookie 字符串（完整一串，含 SESSDATA / bili_jct / DedeUserID 等）
+
+name: bilibili-daily-task
+
+on:
+  workflow_dispatch:                      # 允许手动点按钮跑一次
+  schedule:
+    - cron: '17 16 * * *'                 # UTC 16:17 = 北京时间 00:17（错开整点高峰）
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DOTNET_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Production
+      # 多账号就再加 Ray_BiliBiliCookies__2 / __3，对应 secret COOKIESTR2 / COOKIESTR3
+      Ray_BiliBiliCookies__1: ${{ secrets.COOKIESTR }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run Daily task (观看/分享/投币，拿每日经验)
+        run: |
+          cd src/Ray.BiliBiliTool.Console
+          dotnet run -c Release -- --RunTasks=Daily
