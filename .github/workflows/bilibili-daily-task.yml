@@ -19,6 +19,10 @@ jobs:
       ASPNETCORE_ENVIRONMENT: Production
       # 多账号就再加 Ray_BiliBiliCookies__2 / __3，对应 secret COOKIESTR2 / COOKIESTR3
       Ray_BiliBiliCookies__1: ${{ secrets.COOKIESTR }}
+      # 伪装成浏览器 UA，否则 B 站风控会返回 412
+      Ray_Security__UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+      # 请求间隔，防风控
+      Ray_Security__IntervalSecondsBetweenRequestApi: "3"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
